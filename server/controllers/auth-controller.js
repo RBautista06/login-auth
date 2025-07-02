@@ -2,7 +2,7 @@ import { User } from "../model/user.js";
 import bcrypt from "bcryptjs";
 import { generateVerificationToken } from "../utils/generateVerificationToken.js";
 import { generateJWTToken } from "../utils/generateJWTToken.js";
-import { sendVerificationEmail } from "../resend/email.js";
+import { sendVerificationEmail, sendWelcomeEmail } from "../resend/email.js";
 
 export const signup = async (req, res) => {
   const { name, email, password } = req.body;
@@ -49,9 +49,64 @@ export const signup = async (req, res) => {
   }
 };
 
-export const login = (req, res) => {
-  res.send("Login Route");
+export const login = async (req, res) => {
+  const { email, password } = req.body;
+  try {
+    const user = await User.findOne({ email }); // Look for a user in the database with the given email
+    const isPasswordValid = await bcrypt.compare(password, user.password); // Check if the entered password matches the user's hashed password
+
+    // If the user doesn't exist or the password is incorrect, send an error response
+    if (!user || !isPasswordValid) {
+      return res
+        .status(400)
+        .send({ success: false, message: "Invalid Credentials" });
+    }
+
+    // Check if the user's email is verified
+    const isVerified = user.isVerified;
+    if (!isVerified) {
+      return res
+        .status(400)
+        .send({ success: false, message: "Email is not Verified" });
+    }
+
+    generateJWTToken(res, user._id); // If login is successful, generate a JWT token and attach it (usually as a cookie)
+
+    res.status(200).send({ success: true, message: "Login Successful" });
+  } catch (error) {
+    console.log("Error Logging In", error);
+    res.status(400).send(error);
+  }
 };
 export const logout = (req, res) => {
-  res.send("Logout Route");
+  res.clearCookie("token");
+  res.status(200).send({ success: true, message: "Logged out successfully" });
+};
+
+export const verifyEmail = async (req, res) => {
+  const { code } = req.body;
+  try {
+    const user = await User.findOne({
+      verificationToken: code,
+      verificationTokenExpiresAt: { $gt: Date.now() },
+    });
+    if (!user) {
+      return res.status(400).send({
+        sucess: false,
+        message: "Invalid or Expired Verification Code",
+      });
+    }
+    user.isVerified = true;
+    user.verificationToken = undefined;
+    user.verificationTokenExpiresAt = undefined;
+    await user.save();
+    await sendWelcomeEmail(user.email, user.name);
+
+    res
+      .status(200)
+      .send({ success: true, message: "Email Verified Successfully" });
+  } catch (error) {
+    console.log("Error verifying Email", error);
+    res.status(400).send(error);
+  }
 };
