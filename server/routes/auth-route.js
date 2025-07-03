@@ -6,7 +6,9 @@ import {
   verifyEmail,
   forgotPassword,
   resetPassword,
+  checkAuth,
 } from "../controllers/auth-controller.js";
+import { verifyToken } from "../middleware/verifyToken.js";
 
 const router = express.Router(); // Create a mini Express app (router) to handle routes separately
 
@@ -19,5 +21,7 @@ router.post("/logout", logout);
 router.post("/verify-email", verifyEmail);
 router.post("/forgot-password", forgotPassword);
 router.post("/reset-password/:token", resetPassword);
+
+router.get("/check-auth", verifyToken, checkAuth);
 
 export default router;

@@ -2,10 +2,12 @@ import express from "express";
 import { dbConnection } from "./db/connection.js";
 import authRoutes from "../server/routes/auth-route.js";
 import dotenv from "dotenv";
+import cookieParser from "cookie-parser";
 dotenv.config();
 
 const app = express();
-app.use(express.json());
+app.use(express.json()); //for parsing application/json
+app.use(cookieParser()); // for parsing cookies
 app.use("/api/auth", authRoutes); // the routes in the authRourt will be accessed with the prefix of /api/auth
 
 app.get("/", (req, res) => {
@@ -17,5 +19,3 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Listening to Port: ${PORT}`);
 });
-
-

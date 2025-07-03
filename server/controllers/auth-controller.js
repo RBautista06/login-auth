@@ -11,7 +11,8 @@ import {
 } from "../resend/email.js";
 
 export const signup = async (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, password } = req.body;
+  const email = req.body.email.toLowerCase();
   try {
     if (!name || !email || !password) {
       return res.status(400).send("all fields are required");
@@ -56,7 +57,8 @@ export const signup = async (req, res) => {
 };
 
 export const login = async (req, res) => {
-  const { email, password } = req.body;
+  const { password } = req.body;
+  const email = req.body.email.toLowerCase();
   try {
     const user = await User.findOne({ email }); // Look for a user in the database with the given email
     const isPasswordValid = await bcrypt.compare(password, user.password); // Check if the entered password matches the user's hashed password
@@ -98,7 +100,7 @@ export const verifyEmail = async (req, res) => {
     });
     if (!user) {
       return res.status(400).send({
-        sucess: false,
+        success: false,
         message: "Invalid or Expired Verification Code",
       });
     }
@@ -118,11 +120,13 @@ export const verifyEmail = async (req, res) => {
 };
 
 export const forgotPassword = async (req, res) => {
-  const { email } = req.body;
+  const email = req.body.email.toLowerCase();
   try {
     const user = await User.findOne({ email });
     if (!user) {
-      res.status(400).send({ success: false, message: "User not found" });
+      return res
+        .status(400)
+        .send({ success: false, message: "User not found" });
     }
     const resetPasswordToken = crypto.randomBytes(32).toString("hex");
     const resetPasswordTokenExpiresAt = Date.now() + 60 * 60 * 1000; // 1 hoour expiration date
@@ -172,5 +176,23 @@ export const resetPassword = async (req, res) => {
   } catch (error) {
     console.log("Error Success Password Reset Email", error);
     res.status(400).send(error);
+  }
+};
+
+export const checkAuth = async (req, res) => {
+  try {
+    const user = await User.findById(req.userId);
+    console.log(req.userId);
+    if (!user) {
+      return res
+        .status(400)
+        .send({ success: false, message: "User not found" });
+    }
+    return res
+      .status(200)
+      .send({ success: true, user: { ...user._doc, password: undefined } });
+  } catch (error) {
+    console.log("error checking auth", error);
+    res.status(400).send({ success: false, message: error.message });
   }
 };
