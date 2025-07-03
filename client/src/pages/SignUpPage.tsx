@@ -26,7 +26,7 @@ export default function SignUpPage() {
     password: "",
   });
 
-  const { signup, isLoading, error, user } = useAuthStore();
+  const { signup, isLoading, error } = useAuthStore();
 
   const navigate = useNavigate();
 
