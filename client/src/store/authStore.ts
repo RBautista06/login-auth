@@ -21,6 +21,7 @@ interface AuthState {
   isCheckingAuth: boolean;
 
   signup: (email: string, password: string, name: string) => Promise<void>;
+  verifyEmail: (code: string) => Promise<void>;
 }
 
 // Create the Zustand store with full types
@@ -30,6 +31,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   error: null,
   isAuthenticated: false,
   isCheckingAuth: true,
+  code: null,
 
   signup: async (email, password, name) => {
     set({ isLoading: true, error: null });
@@ -49,6 +51,24 @@ export const useAuthStore = create<AuthState>((set) => ({
     } catch (error: any) {
       console.error(error);
       set({ error: error.message || "Something went wrong", isLoading: false });
+    }
+  },
+  verifyEmail: async (code) => {
+    set({ isLoading: true, error: null });
+    try {
+      const response = await fetch(`${API_URL}/verify-email`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({ code }),
+      });
+      const data = await response.json();
+      set({ isLoading: false, isAuthenticated: true, user: data.user });
+    } catch (error: any) {
+      console.error(error);
+      set({ isLoading: false, error: error.message });
     }
   },
 }));
