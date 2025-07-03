@@ -15,6 +15,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
+import { useAuthStore } from "@/store/authStore.ts";
+import { useNavigate } from "react-router-dom";
+
 export default function SignUpPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -23,13 +26,22 @@ export default function SignUpPage() {
     password: "",
   });
 
+  const { signup, isLoading, error, user } = useAuthStore();
+
+  const navigate = useNavigate();
+
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const { name, email, password } = formData;
+    await signup(email, password, name); // always double check the params sorting
+    const updatedUser = useAuthStore.getState().user; // ✅ read the latest state
+    console.log("user", updatedUser); // will now log the user correctly
     console.log("Form submitted:", formData);
+    navigate("/verify-email");
   };
 
   const containerVariants = {
@@ -168,10 +180,12 @@ export default function SignUpPage() {
                   variants={buttonVariants}
                   whileHover="hover"
                   whileTap="tap">
+                  {error && <p className="text-red-500 text-sm">{error}</p>}
                   <Button
                     type="submit"
+                    disabled={isLoading}
                     className="w-full h-12 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-lg shadow-lg transition-all duration-200">
-                    Create Account
+                    {isLoading ? "Loading..." : "Sign Up"}
                   </Button>
                 </motion.div>
               </motion.div>
