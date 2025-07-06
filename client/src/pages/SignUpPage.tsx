@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/card";
 
 import { useAuthStore } from "@/store/authStore.ts";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function SignUpPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -191,13 +191,15 @@ export default function SignUpPage() {
               <motion.div variants={itemVariants} className="text-center pt-4">
                 <p className="text-sm text-gray-600">
                   Already have an account?{" "}
-                  <motion.a
-                    href="#"
-                    className="text-blue-600 hover:text-blue-700 font-medium transition-colors"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}>
-                    Sign in
-                  </motion.a>
+                  <Link to="/login">
+                    <motion.a
+                      href="#"
+                      className="text-blue-600 hover:text-blue-700 font-medium transition-colors"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}>
+                      Log in
+                    </motion.a>
+                  </Link>
                 </p>
               </motion.div>
             </form>

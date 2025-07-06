@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Link } from "react-router-dom";
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -161,7 +162,7 @@ export default function LoginPage() {
                   <Button
                     type="submit"
                     className="w-full h-12 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-lg shadow-lg transition-all duration-200">
-                    Sign In
+                    Log In
                   </Button>
                 </motion.div>
               </motion.div>
@@ -169,13 +170,14 @@ export default function LoginPage() {
               <motion.div variants={itemVariants} className="text-center pt-6">
                 <p className="text-sm text-gray-600">
                   Don't have an account?{" "}
-                  <motion.a
-                    href="#"
-                    className="text-blue-600 hover:text-blue-700 font-medium transition-colors"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}>
-                    Sign up
-                  </motion.a>
+                  <Link to="/signup">
+                    <motion.a
+                      className="text-blue-600 hover:text-blue-700 font-medium transition-colors"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}>
+                      Sign up
+                    </motion.a>
+                  </Link>
                 </p>
               </motion.div>
             </form>
