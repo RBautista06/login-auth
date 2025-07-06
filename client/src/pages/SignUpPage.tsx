@@ -192,13 +192,12 @@ export default function SignUpPage() {
                 <p className="text-sm text-gray-600">
                   Already have an account?{" "}
                   <Link to="/login">
-                    <motion.a
-                      href="#"
+                    <motion.span
                       className="text-blue-600 hover:text-blue-700 font-medium transition-colors"
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}>
                       Log in
-                    </motion.a>
+                    </motion.span>
                   </Link>
                 </p>
               </motion.div>

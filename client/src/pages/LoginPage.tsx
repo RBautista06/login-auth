@@ -171,12 +171,12 @@ export default function LoginPage() {
                 <p className="text-sm text-gray-600">
                   Don't have an account?{" "}
                   <Link to="/signup">
-                    <motion.a
+                    <motion.span
                       className="text-blue-600 hover:text-blue-700 font-medium transition-colors"
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}>
                       Sign up
-                    </motion.a>
+                    </motion.span>
                   </Link>
                 </p>
               </motion.div>
