@@ -80,7 +80,16 @@ export const login = async (req, res) => {
 
     generateJWTToken(res, user._id); // If login is successful, generate a JWT token and attach it (usually as a cookie)
 
-    res.status(200).send({ success: true, message: "Login Successful" });
+    res.status(200).send({
+      success: true,
+      message: "Login Successful",
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        isVerified: user.isVerified,
+      },
+    });
   } catch (error) {
     console.log("Error Logging In", error);
     res.status(400).send(error);

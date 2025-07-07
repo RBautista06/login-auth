@@ -22,6 +22,9 @@ interface AuthState {
 
   signup: (email: string, password: string, name: string) => Promise<void>;
   verifyEmail: (code: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<void>;
+  checkAuth: () => Promise<void>;
+  logout: () => Promise<void>;
 }
 
 // Create the Zustand store with full types
@@ -70,5 +73,71 @@ export const useAuthStore = create<AuthState>((set) => ({
       console.error(error);
       set({ isLoading: false, error: error.message });
     }
+  },
+
+  login: async (email, password) => {
+    set({ isLoading: true, error: null });
+
+    try {
+      const response = await fetch(`${API_URL}/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await response.json();
+
+      // ✅ You MUST receive `data.user` from the backend
+      if (data.user) {
+        set({
+          isLoading: false,
+          isAuthenticated: true,
+          user: data.user,
+          isCheckingAuth: false, // optional
+        });
+      } else {
+        throw new Error("No user returned");
+      }
+    } catch (error: any) {
+      set({ isLoading: false, error: error.message });
+      throw error;
+    }
+  },
+
+  checkAuth: async () => {
+    set({ isCheckingAuth: true, error: null });
+    try {
+      const response = await fetch(`${API_URL}/check-auth`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      });
+
+      const data = await response.json();
+      if (data.user) {
+        set({ isCheckingAuth: false, isAuthenticated: true, user: data.user });
+      } else {
+        set({ isCheckingAuth: false, isAuthenticated: false, user: null });
+      }
+    } catch (error: any) {
+      set({ isCheckingAuth: false, error: error.message });
+      console.log(error);
+      throw error;
+    }
+  },
+  logout: async () => {
+    await fetch(`${API_URL}/logout`, {
+      method: "POST",
+      credentials: "include",
+    });
+
+    set({
+      user: null,
+      isAuthenticated: false,
+    });
   },
 }));

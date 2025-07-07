@@ -5,7 +5,7 @@
 // export default LoginPage;
 
 import type React from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -18,7 +18,8 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuthStore } from "@/store/authStore";
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -26,14 +27,22 @@ export default function LoginPage() {
     email: "",
     password: "",
   });
-
+  const { login, isAuthenticated, error, user } = useAuthStore();
+  const navigate = useNavigate();
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      navigate("/dashboard");
+    }
+  }, [isAuthenticated, user]);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("Login submitted:", formData);
+    const { email, password } = formData;
+    await login(email, password); // ✅ Don't navigate here
   };
 
   const containerVariants = {
@@ -84,7 +93,7 @@ export default function LoginPage() {
             </motion.div>
             <motion.div variants={itemVariants}>
               <CardDescription className="text-gray-600">
-                Sign in to your account
+                Log in to your account
               </CardDescription>
             </motion.div>
           </CardHeader>
@@ -159,6 +168,7 @@ export default function LoginPage() {
                   variants={buttonVariants}
                   whileHover="hover"
                   whileTap="tap">
+                  {error && <p className="text-red-500 text-sm">{error}</p>}
                   <Button
                     type="submit"
                     className="w-full h-12 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-lg shadow-lg transition-all duration-200">
