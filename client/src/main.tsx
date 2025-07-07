@@ -10,6 +10,7 @@ import Homepage from "./pages/Homepage";
 import ProtectRoute from "./components/ProtectRoute";
 import Dashboard from "./pages/Dashboard";
 import AuthenticatedUserRoute from "./components/AuthenticatedUserRoute";
+import ForgotPasswordPage from "./pages/ForgotPassword";
 
 const router = createBrowserRouter([
   {
@@ -47,6 +48,10 @@ const router = createBrowserRouter([
   {
     path: "/verify-email",
     element: <VerificationEmailPage />,
+  },
+  {
+    path: "/forgot-password",
+    element: <ForgotPasswordPage />,
   },
 ]);
 

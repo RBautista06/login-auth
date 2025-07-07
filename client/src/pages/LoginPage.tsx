@@ -129,13 +129,14 @@ export default function LoginPage() {
                     className="text-sm font-medium text-gray-700">
                     Password
                   </Label>
-                  <motion.a
-                    href="#"
-                    className="text-sm text-blue-600 hover:text-blue-700 transition-colors"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}>
-                    Forgot password?
-                  </motion.a>
+                  <Link to="/forgot-password">
+                    <motion.span
+                      className="text-sm text-blue-600 hover:text-blue-700 transition-colors"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}>
+                      Forgot password?
+                    </motion.span>
+                  </Link>
                 </div>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
