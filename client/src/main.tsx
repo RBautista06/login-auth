@@ -1,4 +1,4 @@
-import { StrictMode, useEffect, useRef, type ReactNode } from "react";
+import { StrictMode, useEffect } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
@@ -11,6 +11,7 @@ import ProtectRoute from "./components/ProtectRoute";
 import Dashboard from "./pages/Dashboard";
 import AuthenticatedUserRoute from "./components/AuthenticatedUserRoute";
 import ForgotPasswordPage from "./pages/ForgotPassword";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
 
 const router = createBrowserRouter([
   {
@@ -51,7 +52,19 @@ const router = createBrowserRouter([
   },
   {
     path: "/forgot-password",
-    element: <ForgotPasswordPage />,
+    element: (
+      <AuthenticatedUserRoute>
+        <ForgotPasswordPage />
+      </AuthenticatedUserRoute>
+    ),
+  },
+  {
+    path: "/reset-password/:token",
+    element: (
+      <AuthenticatedUserRoute>
+        <ResetPasswordPage />
+      </AuthenticatedUserRoute>
+    ),
   },
 ]);
 

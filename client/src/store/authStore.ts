@@ -21,6 +21,7 @@ interface AuthState {
   isAuthenticated: boolean;
   isCheckingAuth: boolean;
   message: null;
+  password: string | null;
 
   signup: (email: string, password: string, name: string) => Promise<void>;
   verifyEmail: (code: string) => Promise<void>;
@@ -28,6 +29,7 @@ interface AuthState {
   checkAuth: () => Promise<void>;
   logout: () => Promise<void>;
   forgotPassword: (email: string) => Promise<void>;
+  resetPassword: (token: string, password: string) => Promise<void>;
 }
 
 // Create the Zustand store with full types
@@ -39,6 +41,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   isCheckingAuth: true,
   code: null,
   message: null,
+  password: null,
 
   signup: async (email, password, name) => {
     set({ isLoading: true, error: null });
@@ -93,6 +96,7 @@ export const useAuthStore = create<AuthState>((set) => ({
       });
       const data = await response.json();
 
+      if (!response.ok) throw new Error(data.message); // this will show in the front end what error is in the backend
       // ✅ You MUST receive `data.user` from the backend
       if (data.user) {
         set({
@@ -145,7 +149,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     });
   },
   forgotPassword: async (email) => {
-    set({ isLoading: true, error: null });
+    set({ isLoading: true, error: null, message: null });
     try {
       const response = await fetch(`${API_URL}/forgot-password`, {
         method: "POST",
@@ -156,7 +160,28 @@ export const useAuthStore = create<AuthState>((set) => ({
         body: JSON.stringify({ email }),
       });
       const data = await response.json();
-      console.log(data.message);
+      if (!response.ok) throw new Error(data.message);
+      console.log("Success:", data.message);
+      set({ isLoading: false, message: data.message });
+    } catch (error: any) {
+      set({ isLoading: false, error: error.message });
+      console.log(error);
+      throw error;
+    }
+  },
+
+  resetPassword: async (token, password) => {
+    set({ isLoading: true, error: null, message: null });
+    try {
+      const response = await fetch(`${API_URL}/reset-password/${token}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({ password }),
+      });
+      const data = await response.json();
       set({ isLoading: false, message: data.message });
     } catch (error: any) {
       set({ isLoading: false, error: error.message });

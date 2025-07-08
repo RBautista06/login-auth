@@ -20,14 +20,16 @@ import { useAuthStore } from "@/store/authStore";
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const { forgotPassword, message } = useAuthStore();
+  const { forgotPassword, message, error } = useAuthStore();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("Password reset requested for:", email);
-    await forgotPassword(email);
-    setIsSubmitted(true);
-    // Add your password reset logic here
+    try {
+      await forgotPassword(email);
+      setIsSubmitted(true);
+    } catch (err) {
+      console.error("Forgot password failed:", err);
+    }
   };
 
   const containerVariants = {
@@ -109,6 +111,13 @@ export default function ForgotPasswordPage() {
                     </CardDescription>
                   </motion.div>
                 </motion.div>
+                {error && (
+                  <motion.p
+                    variants={itemVariants}
+                    className="text-red-600 text-sm bg-red-100 border border-red-200 rounded px-3 py-2 mt-2">
+                    {error}
+                  </motion.p>
+                )}
 
                 <motion.div variants={itemVariants} className="">
                   <motion.div
@@ -147,19 +156,13 @@ export default function ForgotPasswordPage() {
                     If an account with <strong>{email}</strong> exists, you will
                     receive a password reset email shortly.
                   </p>
-                </motion.div>
-
-                <motion.div variants={itemVariants}>
-                  <motion.div
-                    variants={buttonVariants}
-                    whileHover="hover"
-                    whileTap="tap">
-                    <Button
-                      onClick={() => setIsSubmitted(false)}
-                      className="w-full h-12 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-lg shadow-lg transition-all duration-200">
-                      Send Another Email
-                    </Button>
-                  </motion.div>
+                  {message && (
+                    <motion.p
+                      variants={itemVariants}
+                      className="text-green-600 text-sm bg-green-100 border border-green-200 rounded px-3 py-2 mt-2">
+                      {message}
+                    </motion.p>
+                  )}
                 </motion.div>
 
                 <motion.div
