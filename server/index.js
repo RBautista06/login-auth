@@ -8,7 +8,7 @@ import cors from "cors";
 dotenv.config();
 
 const app = express();
-// This line allows your backend (e.g., on port 5000) to accept requests
+// This line allows your backend (e.g., on port 5000) to accept requestss
 // from your frontend (running on http://localhost:5173, like in Vite)
 app.use(
   cors({
